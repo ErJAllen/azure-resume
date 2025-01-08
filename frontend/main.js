@@ -1,13 +1,12 @@
-
- 
 // Function to fetch and display page views from the API
 async function fetchAndDisplayViewCount() {
     
     try {
          // Update with your live API URL if deployed
-        const functionApi = "http://localhost:7071/api/GetResumeCounter";
+        const functionApiUrl = "https://getazureresumecounter.azurewebsites.net/api/getAzureResumeCounter?code=4uQIwKXyKqG3u7reG-6TBBzanRUt2xPFqXCzi19wrMCDAzFu3p7eIg==";
+        const localFunctionApi = "http://localhost:7071/api/GetResumeCounter";
         // Make a GET request to the Azure Function API
-        const response = await fetch(functionApi);
+        const response = await fetch(functionApiUrl);
     
 
         if (!response.ok) {
@@ -40,8 +39,6 @@ document.addEventListener('DOMContentLoaded', fetchAndDisplayViewCount);
 
 
 
-
-
 /*window.addEventListener('DOMContentLoaded', (event) => {
     getVisitCount();
 })
@@ -52,7 +49,8 @@ const getVisitCount = () => {
     let count = 30;
     fetch(functionApi).then(response => {
         return response.json()
-    }).then(response =>{
+    }).then(response =>
+        {
         console.log("Website called function API.");
         count = response.count;
         document.getElementById("counter").innerText = count;

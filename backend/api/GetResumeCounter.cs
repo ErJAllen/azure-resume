@@ -19,39 +19,46 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Company.Function
 {
-    public static class GetResumeCounter
+    public static class GetResumeCounter{
+
+    [FunctionName("GetResumeCounter")]
+    public static HttpResponseMessage Run(
+        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+        [CosmosDB(databaseName: "AzureResume",
+            containerName: "Counter",
+            Connection = "AzureResumeConnectionString",
+            Id = "1",
+            PartitionKey = "1")] Counter currentCounter,
+        [CosmosDB(databaseName: "AzureResume",
+            containerName: "Counter",
+            Connection = "AzureResumeConnectionString",
+            Id = "1",
+            PartitionKey = "1")] out Counter updatedCounter,
+        ILogger log)
     {
-        [FunctionName("GetResumeCounter")]
-        public static HttpResponseMessage Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
-            //This 1st binding will allows us to retrieve an item that has the id of 1
-            //It'll also connect to the AzureResumeConnectionString
-            //It'll look for that item inside of the collectionName container named Counter
-            [CosmosDB(databaseName:"AzureResume",
-                containerName: "Counter",
-                Connection = "AzureResumeConnectionString",
-                Id = "1",
-                PartitionKey = "1")] Counter currentCounter,
-            [CosmosDB(databaseName:"AzureResume",
-                containerName: "Counter",
-                Connection = "AzureResumeConnectionString",
-                Id = "1",
-                PartitionKey = "1")] out Counter updatedCounter,
-            ILogger log) 
+        log.LogInformation("C# HTTP trigger function processed a request.");
+
+        if (currentCounter == null)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
-            updatedCounter = currentCounter;
-            updatedCounter.Count += 1;
-
-            //return new OkObjectResult(updatedCounter);
-
-            var jsonToReturn = JsonConvert.SerializeObject(currentCounter);
-
-            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+            log.LogError("Counter document not found in Cosmos DB.");
+            updatedCounter = null;
+            return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound)
             {
-                Content = new StringContent(jsonToReturn, Encoding.UTF8, "application/json")
+                Content = new StringContent("Counter document not found.", Encoding.UTF8, "application/json")
             };
         }
+
+        updatedCounter = currentCounter;
+        updatedCounter.Count += 1;
+
+        var jsonToReturn = JsonConvert.SerializeObject(updatedCounter);
+
+        log.LogInformation($"Counter updated to: {updatedCounter.Count}");
+
+        return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+        {
+            Content = new StringContent(jsonToReturn, Encoding.UTF8, "application/json")
+        };
+    }
     }
 }
