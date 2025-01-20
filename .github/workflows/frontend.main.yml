@@ -1,8 +1,11 @@
-name: Blob storage website CI
+name: deploy_frontend
+# Deploys when push is made from frontend folder
 
 on:
     push:
         branches: [ main ]
+        paths:
+          - 'frontend/**'
 
 jobs:
   build:
@@ -16,13 +19,15 @@ jobs:
     - name: Upload to blob storage
       uses: azure/CLI@v1
       with:
+        azcliversion: 2.68.0
         inlineScript: |
-            az storage blob upload-batch --account-name <STORAGE_ACCOUNT_NAME> --auth-mode key -d '$web' -s .
+            az storage blob upload-batch --account-name azureresumestorageacct --auth-mode key -d '$web' -s frontend/
     - name: Purge CDN endpoint
       uses: azure/CLI@v1
       with:
+        azcliversion: 2.68.0
         inlineScript: |
-           az cdn endpoint purge --content-paths  "/*" --profile-name "CDN_PROFILE_NAME" --name "CDN_ENDPOINT" --resource-group "RESOURCE_GROUP"
+           az cdn endpoint purge --content-paths  "/*" --profile-name "azureclres" --name "azureclres" --resource-group "azure-resume-rg"
 
   # Azure logout
     - name: logout

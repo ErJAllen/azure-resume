@@ -3,18 +3,16 @@ async function fetchAndDisplayViewCount() {
     
     try {
          // Update with your live API URL if deployed
-        const functionApiUrl = "https://getazureresumecounter.azurewebsites.net/api/getAzureResumeCounter?code=4uQIwKXyKqG3u7reG-6TBBzanRUt2xPFqXCzi19wrMCDAzFu3p7eIg==";
-        const localFunctionApi = "http://localhost:7071/api/GetResumeCounter";
+        const functionApiUrl = 'https://get-azureresumecounter.azurewebsites.net/api/GetResumeCounter?code=iI2HPclIcdp5r7EyGmqpORY3fi19P3IsEmbCwdSsHBPIAzFuTnroAg%3D%3D';
+        const localFunctionApi = 'http://localhost:7071/api/GetResumeCounter';
         // Make a GET request to the Azure Function API
-        const response = await fetch(functionApiUrl);
+        const response = await fetch(localFunctionUrl);
     
-
         if (!response.ok) {
             throw new Error(`API error: ${response.statusText}`);
         }
 
         // Parse the JSON response
-
         const data = await response.json();
         console.log("API Response:", data.count)
 
